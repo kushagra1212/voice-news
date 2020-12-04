@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const Axios=axios.create({
-    baseURL:'https://newsapi.org/v2'
+    baseURL:'https://gnews.io/api/v4'
 })
 
 export default Axios;

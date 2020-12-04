@@ -2,12 +2,12 @@
 import Styles from './Newscard.module.css'
 const Newscard=({article})=>{
 
-    const {description,publishedAt,source,title,urlToImage} = article;
+    const {description,publishedAt,source,title,image} = article;
 console.log(article)
     return(
         <div className={Styles.maincarddiv}>
             <div className={Styles.imgdiv}>
-            <img src={urlToImage}  alt='' />
+            <img src={image}  alt='' />
             </div>
             <div className={Styles.carddiv}  >
                 <strong>

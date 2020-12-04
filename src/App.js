@@ -52,7 +52,7 @@ const [systemaudio]=useState(['can you speak that again ?','Sorry I did not unde
   {
     command:'(give) (some) * news',
     callback:(category)=>{
-      if(category==='business'||category==='entertainment'||category==='general'||category==='health'||category==='science'||category==='sports'||category==='technology')
+      if(category==='business'||category==='entertainment'||category==='world'||category==='health'||category==='science'||category==='sports'||category==='technology')
       {
         settopheadlines('top-headlines');
         setcategory(category);
@@ -78,7 +78,7 @@ const [systemaudio]=useState(['can you speak that again ?','Sorry I did not unde
     let msg = new SpeechSynthesisUtterance('Here it is ');
   if(newstopic)
   {
-    Axios.get(`/everything?q=${newstopic}&apiKey=${APIKEY}`).then((res)=>{
+    Axios.get(`/search?q=${newstopic}&token=${APIKEY}`).then((res)=>{
       setarticles(res.data.articles);
       window.speechSynthesis.speak(msg);
       
@@ -87,7 +87,7 @@ const [systemaudio]=useState(['can you speak that again ?','Sorry I did not unde
   }
  if(topheadlines)
   {
-    Axios.get(`/${topheadlines}?country=${country}${category?`&category=${category}`:''}&apiKey=${APIKEY}`).then((res)=>{
+    Axios.get(`/${topheadlines}?country=${country}${category?`&topic=${category}`:''}&token=${APIKEY}`).then((res)=>{
       
       setarticles(res.data.articles);
       window.speechSynthesis.speak(msg);
@@ -99,8 +99,8 @@ const [systemaudio]=useState(['can you speak that again ?','Sorry I did not unde
   }
   if(source)
   {
-    Axios.get(`/sources?apiKey=${APIKEY}`).then(res=>{
-      setarticles(res.data.sources.filter(sour=>sour.name===source.toLowerCase().trim(' ').join('-')));
+    Axios.get(`/search?q=${source}token=${APIKEY}`).then(res=>{
+      setarticles(res.data.articles);
       window.speechSynthesis.speak(msg);
     }).catch((err)=>console.log(err));
 
