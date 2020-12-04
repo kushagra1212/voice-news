@@ -1,8 +1,8 @@
-import react from 'react';
+
 import Styles from './Newscard.module.css'
 const Newscard=({article})=>{
 
-    const {description,publishedAt,source,title,url,urlToImage} = article;
+    const {description,publishedAt,source,title,urlToImage} = article;
 console.log(article)
     return(
         <div className={Styles.maincarddiv}>

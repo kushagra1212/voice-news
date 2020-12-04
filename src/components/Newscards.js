@@ -1,4 +1,4 @@
-import react from 'react';
+
 import Newscard from './Newscard'
 import Styles from './Newscards.module.css'
 const Newscards=({articles})=>{

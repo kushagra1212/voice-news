@@ -25,7 +25,8 @@ const  App=()=> {
  const [category,setcategory]=useState('');
  const [noneof,setnoneof]=useState(false);
 const [source,setsource]=useState('');
-const [systemaudio,setsystemaudio]=useState(['can you speak that again ?','Sorry I did not understand','can you repeat that '])
+const [systemaudio]=useState(['can you speak that again ?','Sorry I did not understand','can you repeat that ']);
+
 
   const commands=[{
     command:'(give) (me) (the) * news',
@@ -67,7 +68,7 @@ const [systemaudio,setsystemaudio]=useState(['can you speak that again ?','Sorry
     callback:(sour)=>setsource(sour)
   }
 ];
-  const { transcript, resetTranscript } = useSpeechRecognition({commands});
+  const { transcript } = useSpeechRecognition({commands});
  
   console.log(transcript)
  
@@ -110,7 +111,7 @@ const [systemaudio,setsystemaudio]=useState(['can you speak that again ?','Sorry
   }
 
 
-  },[newstopic,topheadlines,category])
+  },[newstopic,topheadlines,category,noneof,country,source,systemaudio])
 
 
   const miconbutton=()=>{
