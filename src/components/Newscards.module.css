@@ -1,0 +1,13 @@
+.maindiv{
+    background-color: lightcoral;
+  
+    
+    padding: 5%;
+ 
+
+}
+.maindiv div{
+    display: flex;
+   flex-direction: column;
+   width:90%;
+}
