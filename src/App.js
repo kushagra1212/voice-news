@@ -1,6 +1,6 @@
 
 import Styles from './App.module.css';
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+
 import {useEffect,useState} from 'react';
 import Newscards from './components/Newscards'
 import Axios from './axios.js';
@@ -26,55 +26,13 @@ const  App=()=> {
   const [articles,setarticles]=useState([]);
   const [country,setcountry]=useState('us');
  const [topheadlines,settopheadlines]=useState('');
- const [category,setcategory]=useState('');
- const [noneof,setnoneof]=useState(false);
+ const [category,setcategory]=useState('')
+ const [noneof,setnoneof]=useState(false)
 const [source,setsource]=useState('');
 const [systemaudio]=useState(['can you speak that again ?','Sorry I did not understand','can you repeat that ']);
 const [transcript,settranscript]=useState('')
 const [lang,setlang]=useState('en');
-{/*}
-  const commands=[{
-    command:'(give) (me) (the) * news',
-    callback:(newss)=>{
-      settopheadlines('');
-      setnewstopic(newss)
-      setcategory('');
-      setsource('')
-      setnoneof(false)
-    }
-  },
-{
-  command: '(give) (the) top headlines from *',
-  callback:(country)=>{
-    if(country===' India') setcountry('in');
-    settopheadlines('top-headlines');
-    setnewstopic('');
-    setcategory('');
-    setsource('')
-    setnoneof(false)
-  }
-  },
-  {
-    command:'(give) (some) * news',
-    callback:(category)=>{
-      if(category==='business'||category==='entertainment'||category==='world'||category==='health'||category==='science'||category==='sports'||category==='technology')
-      {
-        settopheadlines('top-headlines');
-        setcategory(category);
-        setnewstopic('');
-        setsource('')
 
-        setnoneof(false)
-
-      }
-    }},
-    {
-    command:'show (some) news from *',
-    callback:(sour)=>setsource(sour)
-  }
-];
-const { transcript } = useSpeechRecognition({commands}); */}
- 
  
  
  
@@ -90,7 +48,7 @@ const { transcript } = useSpeechRecognition({commands}); */}
     }).catch(err=>
       console.log(err) );
   }
- if(topheadlines)
+ else if(topheadlines)
   {
     Axios.get(`/${topheadlines}?country=${country}&lang=${lang}${category?`&topic=${category}`:'breaking-news'}&token=${APIKEY}`).then((res)=>{
       
@@ -102,75 +60,110 @@ const { transcript } = useSpeechRecognition({commands}); */}
       );
 
   }
-  {/*}
-  if(source)
+  else if(noneof)
   {
-    Axios.get(`/search?q=${source}token=${APIKEY}`).then(res=>{
-      setarticles(res.data.articles);
-      window.speechSynthesis.speak(msg);
-    }).catch((err)=>console.log(err));
-
-  }*/}
-  if(noneof){
-    var msga = new SpeechSynthesisUtterance(systemaudio[Math.floor(Math.random()*4)]);
+console.log("not understand")
+    let msga = new SpeechSynthesisUtterance(systemaudio[Math.floor(Math.random()*3)]);
     window.speechSynthesis.speak(msga);
   }
+ 
+  
 
 
-  },[newstopic,topheadlines,category,noneof,country,source,systemaudio])
-useEffect(()=>{
-  recognition.onresult=(e)=>{
-const current=e.resultIndex;
 
-settranscript(e.results[current][0].transcript);
-const ar=transcript.split(" ");
-if(ar[ar.length-1]=='news'){
-let category=ar[ar.length-2];
-if(category==='business'||category==='entertainment'||category==='world'||category==='health'||category==='science'||category==='sports'||category==='technology')
-      {
-        settopheadlines('top-headlines');
-        setcategory(category);
-        setnewstopic('');
-        
-
-        setnoneof(false);
-       
-
+  },[newstopic,topheadlines,category,lang,noneof,country,source,systemaudio]);
+  
+  
+   const shownews=(e)=>{
+   
+    
+      const current=e.resultIndex;
+      
+      settranscript(e.results[current][0].transcript);
+      let ar=e.results[current][0].transcript.split(" ");
+      console.log(ar)
+      if(ar[ar.length-1]==='news'){
+      let cate=ar[ar.length-2];
+      
+      if(cate==='business'||cate==='entertainment'||cate==='world'||cate==='health'||cate==='science'||cate==='sports'||cate==='technology')
+            {
+              console.log(cate)
+              
+              settopheadlines('top-headlines');
+              setcategory(cate);
+              setnewstopic('');
+              
+              setnoneof(false)
+             
+           
+      
+            }
+      else{
+        settopheadlines('');
+      setnewstopic(cate)
+      setcategory('');
+      setnoneof(false)
+      
+      
       }
-else{
-  settopheadlines('');
-setnewstopic(category)
-setcategory('');
-
-setnoneof(false)
-}
-}
-
-
-else if(transcript.indexOf('top headlines')!==-1)
-{console.log("yes")
-  const country=ar[ar.length-1];
-country=='India'?setcountry('in'):setcountry('us');
-
-  settopheadlines('top-headlines');
-  setnewstopic('');
-  setcategory('');
-  setsource('');
-  setnoneof(false);
-
-}
-  }
-console.log(articles)
-})
-
+      }
+      
+      
+      else if(transcript.indexOf('top headlines')!==-1)
+      {
+        const country=ar[ar.length-1];
+      country==='India'?setcountry('in'):setcountry('us');
+      
+        settopheadlines('top-headlines');
+        setnewstopic('');
+        setcategory('');
+        setsource('');
+        setnoneof(false)
+      
+      }
+     
+      else{
+        setnoneof(true)
+        setnewstopic('');
+        setcategory('');
+        setsource('');
+        settopheadlines('');
+      } 
+      
+        
+   }
+  
+  useEffect(()=>{
+    recognition.onresult=(e)=>{
+      const current=e.resultIndex;
+      console.log(e.results[current][0].transcript)
+      console.log(transcript)
+      if(e.results[current][0].transcript!==transcript)
+      {
+        
+        shownews(e);
+      }
+      
+    }
+   
+  },[transcript])
+   
+  
   const miconbutton=()=>{
    
   
     var msg = new SpeechSynthesisUtterance('listening');
     window.speechSynthesis.speak(msg);
-    recognition.start();
-   
- 
+    
+      recognition.start();
+       
+    
+  
+  
+      
+
+
+  
   }
   
  

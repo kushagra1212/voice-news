@@ -1,6 +1,6 @@
 
 import Styles from './Newscard.module.css'
-
+const Newsimg='../news.png'
 const Newscard=({article})=>{
 
     const {description,url,publishedAt,source,title,image} = article;
@@ -9,7 +9,7 @@ const Newscard=({article})=>{
         <a href={url}>
         <div  className={Styles.maincarddiv}>
             <div className={Styles.imgdiv}>
-            <img src={image}  alt='' />
+            <img src={image}  alt={Newsimg} />
             </div>
             <div className={Styles.carddiv}  >
                 <strong>
