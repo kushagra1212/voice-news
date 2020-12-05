@@ -7,16 +7,20 @@ import Axios from './axios.js';
 
 
 
-  
+  const SpeechRecognistion=window.SpeechRecognition || window.webkitSpeechRecognition;
+
+const recognition=new SpeechRecognistion();
 
 
-
+recognition.onstart=()=>{
+  console.log("listening your voice");
+}
 
 
 const APIKEY=process.env.REACT_APP_NEWSS_API_KEY;
 
 const  App=()=> {
- 
+  
  
   const [newstopic,setnewstopic]=useState('');
   const [articles,setarticles]=useState([]);
@@ -26,8 +30,9 @@ const  App=()=> {
  const [noneof,setnoneof]=useState(false);
 const [source,setsource]=useState('');
 const [systemaudio]=useState(['can you speak that again ?','Sorry I did not understand','can you repeat that ']);
-
-
+const [transcript,settranscript]=useState('')
+const [lang,setlang]=useState('en');
+{/*}
   const commands=[{
     command:'(give) (me) (the) * news',
     callback:(newss)=>{
@@ -68,9 +73,9 @@ const [systemaudio]=useState(['can you speak that again ?','Sorry I did not unde
     callback:(sour)=>setsource(sour)
   }
 ];
-  const { transcript } = useSpeechRecognition({commands});
+const { transcript } = useSpeechRecognition({commands}); */}
  
-  console.log(transcript)
+ 
  
  
   useEffect(()=>{
@@ -87,7 +92,7 @@ const [systemaudio]=useState(['can you speak that again ?','Sorry I did not unde
   }
  if(topheadlines)
   {
-    Axios.get(`/${topheadlines}?country=${country}${category?`&topic=${category}`:''}&token=${APIKEY}`).then((res)=>{
+    Axios.get(`/${topheadlines}?country=${country}&lang=${lang}${category?`&topic=${category}`:'breaking-news'}&token=${APIKEY}`).then((res)=>{
       
       setarticles(res.data.articles);
       window.speechSynthesis.speak(msg);
@@ -97,6 +102,7 @@ const [systemaudio]=useState(['can you speak that again ?','Sorry I did not unde
       );
 
   }
+  {/*}
   if(source)
   {
     Axios.get(`/search?q=${source}token=${APIKEY}`).then(res=>{
@@ -104,7 +110,7 @@ const [systemaudio]=useState(['can you speak that again ?','Sorry I did not unde
       window.speechSynthesis.speak(msg);
     }).catch((err)=>console.log(err));
 
-  }
+  }*/}
   if(noneof){
     var msga = new SpeechSynthesisUtterance(systemaudio[Math.floor(Math.random()*4)]);
     window.speechSynthesis.speak(msga);
@@ -112,13 +118,57 @@ const [systemaudio]=useState(['can you speak that again ?','Sorry I did not unde
 
 
   },[newstopic,topheadlines,category,noneof,country,source,systemaudio])
+useEffect(()=>{
+  recognition.onresult=(e)=>{
+const current=e.resultIndex;
 
+settranscript(e.results[current][0].transcript);
+const ar=transcript.split(" ");
+if(ar[ar.length-1]=='news'){
+let category=ar[ar.length-2];
+if(category==='business'||category==='entertainment'||category==='world'||category==='health'||category==='science'||category==='sports'||category==='technology')
+      {
+        settopheadlines('top-headlines');
+        setcategory(category);
+        setnewstopic('');
+        
+
+        setnoneof(false);
+       
+
+      }
+else{
+  settopheadlines('');
+setnewstopic(category)
+setcategory('');
+
+setnoneof(false)
+}
+}
+
+
+else if(transcript.indexOf('top headlines')!==-1)
+{console.log("yes")
+  const country=ar[ar.length-1];
+country=='India'?setcountry('in'):setcountry('us');
+
+  settopheadlines('top-headlines');
+  setnewstopic('');
+  setcategory('');
+  setsource('');
+  setnoneof(false);
+
+}
+  }
+console.log(articles)
+})
 
   const miconbutton=()=>{
-    SpeechRecognition.startListening();
-    console.log("listening")
+   
+  
     var msg = new SpeechSynthesisUtterance('listening');
     window.speechSynthesis.speak(msg);
+    recognition.start();
    
  
   }

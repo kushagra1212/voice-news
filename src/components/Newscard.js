@@ -1,11 +1,13 @@
 
 import Styles from './Newscard.module.css'
+
 const Newscard=({article})=>{
 
-    const {description,publishedAt,source,title,image} = article;
-console.log(article)
+    const {description,url,publishedAt,source,title,image} = article;
+
     return(
-        <div className={Styles.maincarddiv}>
+        <a href={url}>
+        <div  className={Styles.maincarddiv}>
             <div className={Styles.imgdiv}>
             <img src={image}  alt='' />
             </div>
@@ -24,6 +26,7 @@ console.log(article)
           
 
         </div>
+        </a>
     );
 }
 export default Newscard;
