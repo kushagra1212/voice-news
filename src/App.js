@@ -32,16 +32,25 @@ const App = () => {
   const [lang, setlang] = useState("en");
   const [listening,setlistening]=useState(false)
 
-  useEffect(() => {
+  useEffect(()=>{
     let msg = new SpeechSynthesisUtterance("Here it is ");
     if (newstopic) {
       Axios.get(`/search?q=${newstopic}&token=${APIKEY}`)
         .then((res) => {
           setarticles(res.data.articles);
           window.speechSynthesis.speak(msg);
+      
+
+    
+ 
         })
         .catch((err) => console.log(err));
-    } else if (topheadlines) {
+    } 
+  },[newstopic])
+
+  useEffect(()=>{
+    let msg = new SpeechSynthesisUtterance("Here it is ");
+    if (topheadlines) {
       Axios.get(
         `/${topheadlines}?country=${country}&lang=${lang}${
           category ? `&topic=${category}` : "breaking-news"
@@ -50,24 +59,30 @@ const App = () => {
         .then((res) => {
           setarticles(res.data.articles);
           window.speechSynthesis.speak(msg);
+          
+         msg=new SpeechSynthesisUtterance("would you want me to read that ?");
+       
+         
+           window.speechSynthesis.speak(msg);
+            setlistening(true);
+            recognition.start();
+         
+  
         })
         .catch((err) => console.log(err));
-    } else if (noneof.notunderstand) {
+    } 
+  },[topheadlines])
+  
+  useEffect(() => {
+    
+  if (noneof.notunderstand) {
       console.log("did not understand");
       let msga = new SpeechSynthesisUtterance(
         systemaudio[Math.floor(Math.random() * 3)]
       );
       window.speechSynthesis.speak(msga);
     }
-  }, [
-    newstopic,
-    topheadlines,
-    category,
-    lang,
-    noneof,
-    country,
-    source,
-    systemaudio,
+  }, [ noneof 
   ]);
 
   const shownews = (e) => {
@@ -94,12 +109,13 @@ const App = () => {
         settopheadlines("top-headlines");
         setcategory(cate);
         setnewstopic("");
-
+        setsource("");
         setnoneof({notunderstand:false,home:false});
       } else {
         settopheadlines("");
         setnewstopic(cate);
         setcategory("");
+        setsource("");
         setnoneof({notunderstand:false,home:false});
       }
     } else if (transcript.indexOf("top headlines") !== -1) {
@@ -120,6 +136,43 @@ const App = () => {
       setsource("");
       settopheadlines("");
     }
+    else if(ar[ar.length - 1]==="yes")
+    {
+      console.log("cane")
+      setnoneof({notunderstand:false,home:false});
+      setnewstopic("");
+      setcategory("");
+      setsource("");
+      settopheadlines("");
+      for(let i=0;i<articles.length;i++)
+      {
+        let ms=new SpeechSynthesisUtterance(`${articles[i].title}`);
+        window.speechSynthesis.speak(ms);
+        if(i==2)
+        {
+          ms=new SpeechSynthesisUtterance("should I continue")
+          window.speechSynthesis.speak(ms);
+          return;
+          
+        }
+      }
+   /*}    if(id===2)
+       {
+        ms=new SpeechSynthesisUtterance("should I continue");
+        window.speechSynthesis.speak(ms);
+        recognition.start();
+        listening(true);
+        recognition.onresult=(e)=>{
+          let arr = e.results[e.resultIndex][0].transcript.split(" ");
+          if(!arr[arr.length-1]==="yes")
+          {
+            return;
+
+          }
+        }
+       } */
+
+      }
     
     else {
       setnoneof({notunderstand:true,home:false});
@@ -143,19 +196,22 @@ const App = () => {
         
       }
     };
-  }, [transcript]);
+  },[transcript]);
   useState(()=>{
     recognition.onend=()=>{
-      setlistening(false)
+      setlistening(false);
     }
   })
 
   const miconbutton = () => {
     var msg = new SpeechSynthesisUtterance("listening");
     window.speechSynthesis.speak(msg);
+   
+    setlistening(true) ;
+recognition.start();
 
-    recognition.start();
-    setlistening(true)
+   
+  
   };
 
   return (
