@@ -1,13 +1,13 @@
 
 import Newscard from './Newscard'
 import Styles from './Newscards.module.css'
-const Newscards=({articles})=>{
+const Newscards=({articles,count})=>{
  
     return(
 <div className={Styles.maindiv}>
 
 {articles.map((article,id)=>  <div key={id}>
-   <Newscard  article={article} />
+   <Newscard  article={article} count={count} id={id} />
    </div>)}
 
    </div>

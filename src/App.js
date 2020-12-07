@@ -31,20 +31,21 @@ const App = () => {
   const [transcript, settranscript] = useState("");
   const [lang, setlang] = useState("en");
   const [listening,setlistening]=useState(false)
-
-  useEffect(()=>{
+ 
+  const [count,setcount]=useState(-1);
+  useEffect(async()=>{
     let msg = new SpeechSynthesisUtterance("Here it is ");
-    if (newstopic) {
-      Axios.get(`/search?q=${newstopic}&token=${APIKEY}`)
+    if (newstopic.length>1) {
+     await Axios.get(`/search?q=${newstopic}&token=${APIKEY}`)
         .then((res) => {
           setarticles(res.data.articles);
           window.speechSynthesis.speak(msg);
-          msg=new SpeechSynthesisUtterance("would you want me to read that ?");
-       
-         
+          msg=new SpeechSynthesisUtterance("would you like me to read that ?");
+          recognition.start();
+     
           window.speechSynthesis.speak(msg);
            setlistening(true);
-recognition.start();
+
     
  
         })
@@ -52,10 +53,10 @@ recognition.start();
     } 
   },[newstopic])
 
-  useEffect(()=>{
+  useEffect(async()=>{
     let msg = new SpeechSynthesisUtterance("Here it is ");
-    if (topheadlines) {
-      Axios.get(
+    if (topheadlines.length>1) {
+     await Axios.get(
         `/${topheadlines}?${
           category.length>1 ? `&topic=${category}` : "&topic=breaking-news"
 }&lang=${lang}${country.length>1?`&country=${country}`:"&country=us"}&token=${APIKEY}`
@@ -64,19 +65,19 @@ recognition.start();
           setarticles(res.data.articles);
           window.speechSynthesis.speak(msg);
           
-         msg=new SpeechSynthesisUtterance("would you want me to read that ?");
-       
-         
+         msg=new SpeechSynthesisUtterance("would you like me to read that ?");
+         recognition.start();
+        
            window.speechSynthesis.speak(msg);
             setlistening(true);
-            recognition.start();
+            
             
          
   
         })
         .catch((err) => console.log(err));
     } 
-  },[category])
+  },[topheadlines])
   
   useEffect(() => {
     
@@ -94,12 +95,12 @@ recognition.start();
 
   const shownews = (e) => {
     const current = e.resultIndex;
-
     settranscript(e.results[current][0].transcript);
+
     let temp=e.results[current][0].transcript;
     let ar = e.results[current][0].transcript.split(" ");
     console.log(ar);
-    if (temp.indexOf("news") !== -1 && temp.indexOf("India")===-1) {
+    if (temp.indexOf("news") !== -1 && temp.indexOf("India")===-1 && temp.indexOf("Hindi")===-1) {
       let cate = ar[ar.length - 2];
 
       if (
@@ -119,7 +120,13 @@ recognition.start();
         setsource("");
         setcountry("");
         setnoneof({notunderstand:false,home:false});
-      } else {
+      } else if(cate === "business" ||
+      cate === "entertainment" ||
+      cate === "world" ||
+      cate === "health" ||
+      cate === "science" ||
+      cate === "sports" ||
+      cate === "technology") {
         settopheadlines("");
         setnewstopic(cate);      // give me bitcoin news
         setcategory("");
@@ -151,7 +158,8 @@ recognition.start();
         }
       }
      //show me sports news from india
-     if(lang==='Hindi')   setlang('hi')  //show me sports news from india in Hindi
+     if(lang==='Hindi')   setlang('hi') 
+     if(lang==='Tamil')   setlang('ta')  //show me sports news from india in Hindi
       setcountry("in");
       setsource("");
       setnewstopic("");
@@ -166,27 +174,7 @@ recognition.start();
       setsource("");
       settopheadlines("");
     }
-    else if(temp.indexOf("yes")!==-1)
-    {
-      console.log("cane")
-      setnoneof({notunderstand:false,home:false});
-      setnewstopic("");
-      setcategory("");
-      setsource("");
-      settopheadlines("");
-      for(let i=0;i<articles.length;i++)
-      {
-        let ms=new SpeechSynthesisUtterance(articles[i].title);
-       window.speechSynthesis.speak(ms);
-        if(i===2)
-        {
-          ms=new SpeechSynthesisUtterance("should I continue")
-          window.speechSynthesis.speak(ms);
-          setlistening(false)
-          return;
-          
-        }
-      }
+   
    /*}    if(id===2)
        {
         ms=new SpeechSynthesisUtterance("should I continue");
@@ -203,7 +191,7 @@ recognition.start();
         }
        } */
 
-      }
+      
     
     else {
       setnoneof({notunderstand:true,home:false});
@@ -222,17 +210,42 @@ recognition.start();
      
       console.log(e.results[current][0].transcript);
       console.log(transcript);
-      if (e.results[current][0].transcript !== transcript) {
-        shownews(e);
-        
-      }
+     
+      if(e.results[current][0].transcript.indexOf("yes")!==-1)
+      {
+        console.log("cane")
+        setnoneof({notunderstand:false,home:false});
+        setnewstopic("");
+        setcategory("");
+        setsource("");
+        settopheadlines("");
+        settranscript(e.results[current][0].transcript);
+        for(let i=0;i<articles.length;i++)
+        {
+          let ms=new SpeechSynthesisUtterance(articles[i].title);
+         window.speechSynthesis.speak(ms);
+         setcount(prev=>prev+1);
+          if(i===2)
+          {
+            ms=new SpeechSynthesisUtterance("should I continue")
+            window.speechSynthesis.speak(ms);
+            setlistening(false)
+            return;
+            
+          }
+        }}
+       else if (e.results[current][0].transcript !== transcript) {
+          shownews(e);
+          
+        }
+    
     };
   },[transcript]);
   useState(()=>{
     recognition.onend=()=>{
       setlistening(false);
     }
-  })
+  },[newstopic,topheadlines])
 
   const miconbutton = () => {
     var msg = new SpeechSynthesisUtterance("listening");
@@ -240,7 +253,7 @@ recognition.start();
    
     setlistening(true) ;
 recognition.start();
-
+setcount(-1)
    
   
   };
@@ -252,7 +265,7 @@ recognition.start();
   {noneof.home?null:<div className={Styles.textdiv}   > <h3>{transcript}</h3> </div>} 
       {noneof.home || noneof.notunderstand? (
        <Home/> 
-      ) :  <Newscards className={Styles.newscards} articles={articles} />}
+      ) :  <Newscards className={Styles.newscards} count={count}   articles={articles} />}
     </div>
   );
 };

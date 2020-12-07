@@ -1,11 +1,11 @@
 
 .App{
-    background: linear-gradient(to right, #c2e59c, #64b3f4);
+    background: linear-gradient(to right, #3b4134, #474a4d);
 }
 .textdiv{
     transform: translate(0%,-50%);
     max-width:50%;
-    left: 0%;
+  right: 20%;
     position: fixed;
     top:90%;
     border:2px solid rgba(255, 255, 255, 0.021);
@@ -14,6 +14,7 @@
     box-shadow: 2px 2px 10px 2px rgba(97, 94, 94, 0.781);
 z-index: 100;
 }
+
 .textdiv h3{
     margin: 3%;
 }
@@ -26,9 +27,9 @@ z-index: 100;
     position: fixed;
     border:10px solid rgba(255, 255, 255, 0);
     border-radius:50px;
-    width:8%;
+    width:80px;
     height: 80px;
- left:50%;
+ right:0%;
  top:90%;
  z-index: 100;
 transform: translate(-50%,-50%);
@@ -44,8 +45,8 @@ box-shadow: 2px 2px 10px 2px #69bff5;
     border:10px solid rgba(255, 255, 255, 0);
     border-radius:50px;
     height: 80px;
- left:50%;
- width:8%;
+    right:0%;
+ width:80px;
  top:90%;
  z-index: 10;
 transform: translate(-50%,-50%);
@@ -56,7 +57,21 @@ box-shadow: 2px 2px 10px 2px #69bff5;
 animation: butani 3s  5;
 animation-direction: alternate-reverse;
 z-index: 100;
-}   
+}  
+@media only screen and (max-width:425px)
+{
+    .textdiv{
+    top: 80%;
+    left: 0%;
+  
+    }
+    .speak{
+        left:50%;
+    }
+    .speakclick{
+        left:50%;
+    }
+} 
 @-moz-keyframes butani{
     from{
         box-shadow: 2px 2px 10px 2px #69bff5;
