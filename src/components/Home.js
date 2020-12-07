@@ -1,7 +1,7 @@
 import react from 'react';
-
+import Styles from './Home.module.css'
 const Home=()=>{
-    return(<div>
+    return(<div className={Styles.main}>
         home
     </div>)
 }

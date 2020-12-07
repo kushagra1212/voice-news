@@ -6,10 +6,12 @@ const Newscard=({article})=>{
     const {description,url,publishedAt,source,title,image} = article;
 
     return(
-        <a href={url}>
-        <div  className={Styles.maincarddiv}>
+       
+        
+        <div className={Styles.mydiv}>
+            
             <div className={Styles.imgdiv}>
-            <img src={image}  alt={Newsimg} />
+            <img src={image} width="100%" height="100%" alt={Newsimg}  />
             </div>
             <div className={Styles.carddiv}  >
                 <strong>
@@ -24,9 +26,9 @@ const Newscard=({article})=>{
             </div>
             
           
-
+   
         </div>
-        </a>
+     
     );
 }
 export default Newscard;

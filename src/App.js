@@ -39,8 +39,12 @@ const App = () => {
         .then((res) => {
           setarticles(res.data.articles);
           window.speechSynthesis.speak(msg);
-      
-
+          msg=new SpeechSynthesisUtterance("would you want me to read that ?");
+       
+         
+          window.speechSynthesis.speak(msg);
+           setlistening(true);
+recognition.start();
     
  
         })
@@ -52,9 +56,9 @@ const App = () => {
     let msg = new SpeechSynthesisUtterance("Here it is ");
     if (topheadlines) {
       Axios.get(
-        `/${topheadlines}?country=${country}&lang=${lang}${
-          category ? `&topic=${category}` : "breaking-news"
-        }&token=${APIKEY}`
+        `/${topheadlines}?${
+          category.length>1 ? `&topic=${category}` : "&topic=breaking-news"
+}&lang=${lang}${country.length>1?`&country=${country}`:"&country=us"}&token=${APIKEY}`
       )
         .then((res) => {
           setarticles(res.data.articles);
@@ -66,21 +70,24 @@ const App = () => {
            window.speechSynthesis.speak(msg);
             setlistening(true);
             recognition.start();
+            
          
   
         })
         .catch((err) => console.log(err));
     } 
-  },[topheadlines])
+  },[category])
   
   useEffect(() => {
     
   if (noneof.notunderstand) {
       console.log("did not understand");
-      let msga = new SpeechSynthesisUtterance(
+      let msg = new SpeechSynthesisUtterance(
         systemaudio[Math.floor(Math.random() * 3)]
       );
-      window.speechSynthesis.speak(msga);
+      window.speechSynthesis.speak(msg);
+        
+      
     }
   }, [ noneof 
   ]);
@@ -89,10 +96,10 @@ const App = () => {
     const current = e.resultIndex;
 
     settranscript(e.results[current][0].transcript);
-    
+    let temp=e.results[current][0].transcript;
     let ar = e.results[current][0].transcript.split(" ");
     console.log(ar);
-    if (ar[ar.length - 1] === "news") {
+    if (temp.indexOf("news") !== -1 && temp.indexOf("India")===-1) {
       let cate = ar[ar.length - 2];
 
       if (
@@ -107,28 +114,51 @@ const App = () => {
         console.log(cate);
 
         settopheadlines("top-headlines");
-        setcategory(cate);
+        setcategory(cate);       //show me sports news
         setnewstopic("");
         setsource("");
+        setcountry("");
         setnoneof({notunderstand:false,home:false});
       } else {
         settopheadlines("");
-        setnewstopic(cate);
+        setnewstopic(cate);      // give me bitcoin news
         setcategory("");
         setsource("");
+        setcountry("");
         setnoneof({notunderstand:false,home:false});
       }
-    } else if (transcript.indexOf("top headlines") !== -1) {
-      const country = ar[ar.length - 1];
-      country === "India" ? setcountry("in") : setcountry("us");
-
+    } else if (temp.indexOf("top") !== -1) {
+      const country = ar[ar.length - 1]; //show me top news from india
+      country === "India" ? setcountry("in") : setcountry("");
+      country === "Tamil" ? setcountry("ta") : setcountry("");
       settopheadlines("top-headlines");
       setnewstopic("");
       setcategory("");
       setsource("");
       setnoneof({notunderstand:false,home:false});
     }
-    else if(transcript.indexOf("go home")!==-1||transcript.indexOf("go back")!==-1)
+    else if(temp.indexOf("India")!==-1){
+      const lan=ar[ar.length-1];
+      const cat=ar[ar.length-4];      //show me  news from india
+      
+      settopheadlines("top-headlines");
+      const art=["business","entertainment","world","health","science","sports","technology" ]
+      for(let i=0;i<art.length;i++)
+      {
+        if(temp.indexOf(art[i])!==-1)
+        {
+          setcategory(art[i]); 
+        }
+      }
+     //show me sports news from india
+     if(lang==='Hindi')   setlang('hi')  //show me sports news from india in Hindi
+      setcountry("in");
+      setsource("");
+      setnewstopic("");
+      setnoneof({notunderstand:false,home:false});
+      
+    }
+    else if(temp.indexOf("go home")!==-1||transcript.indexOf("go back")!==-1)
     {
       setnoneof({notunderstand:false,home:true});
       setnewstopic("");
@@ -136,7 +166,7 @@ const App = () => {
       setsource("");
       settopheadlines("");
     }
-    else if(ar[ar.length - 1]==="yes")
+    else if(temp.indexOf("yes")!==-1)
     {
       console.log("cane")
       setnoneof({notunderstand:false,home:false});
@@ -146,12 +176,13 @@ const App = () => {
       settopheadlines("");
       for(let i=0;i<articles.length;i++)
       {
-        let ms=new SpeechSynthesisUtterance(`${articles[i].title}`);
-        window.speechSynthesis.speak(ms);
-        if(i==2)
+        let ms=new SpeechSynthesisUtterance(articles[i].title);
+       window.speechSynthesis.speak(ms);
+        if(i===2)
         {
           ms=new SpeechSynthesisUtterance("should I continue")
           window.speechSynthesis.speak(ms);
+          setlistening(false)
           return;
           
         }
@@ -216,9 +247,10 @@ recognition.start();
 
   return (
     <div className={Styles.App}>
-      <button disabled={listening} className={!listening?Styles.speak:Styles.speakclick} onClick={miconbutton}><span>🎙️</span></button>
-  {noneof.home?null:<div className={Styles.textdiv}   > <h3>{transcript}</h3> </div>}
-      {noneof.home? (
+    
+      <button disabled={listening} className={!listening?Styles.speak:Styles.speakclick} onClick={miconbutton}>Say</button>
+  {noneof.home?null:<div className={Styles.textdiv}   > <h3>{transcript}</h3> </div>} 
+      {noneof.home || noneof.notunderstand? (
        <Home/> 
       ) :  <Newscards className={Styles.newscards} articles={articles} />}
     </div>
