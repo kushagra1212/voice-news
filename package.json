@@ -1,6 +1,6 @@
 {
-  "homepage": "http://kushagra1212.github.io/news-website",
-  "name": "news-app",
+  "homepage": "https://github.com/kushagra1212/voice-news",
+  "name": "voice-news",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
