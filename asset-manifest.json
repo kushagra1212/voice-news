@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/kushagra1212/voice-news/static/css/main.a97e8c4b.chunk.css",
+    "main.js": "/kushagra1212/voice-news/static/js/main.b027b46e.chunk.js",
+    "main.js.map": "/kushagra1212/voice-news/static/js/main.b027b46e.chunk.js.map",
+    "runtime-main.js": "/kushagra1212/voice-news/static/js/runtime-main.fa92f004.js",
+    "runtime-main.js.map": "/kushagra1212/voice-news/static/js/runtime-main.fa92f004.js.map",
+    "static/js/2.121c066d.chunk.js": "/kushagra1212/voice-news/static/js/2.121c066d.chunk.js",
+    "static/js/2.121c066d.chunk.js.map": "/kushagra1212/voice-news/static/js/2.121c066d.chunk.js.map",
+    "index.html": "/kushagra1212/voice-news/index.html",
+    "static/css/main.a97e8c4b.chunk.css.map": "/kushagra1212/voice-news/static/css/main.a97e8c4b.chunk.css.map",
+    "static/js/2.121c066d.chunk.js.LICENSE.txt": "/kushagra1212/voice-news/static/js/2.121c066d.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.fa92f004.js",
+    "static/js/2.121c066d.chunk.js",
+    "static/css/main.a97e8c4b.chunk.css",
+    "static/js/main.b027b46e.chunk.js"
+  ]
+}
