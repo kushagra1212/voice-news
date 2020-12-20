@@ -8,6 +8,8 @@ const SpeechRecognistion =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 
 const recognition = new SpeechRecognistion();
+
+recognition.lang = 'en-IN';
 let reco=true;
 recognition.onstart = () => {
   console.log("listening your voice");
