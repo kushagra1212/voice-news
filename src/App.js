@@ -1,6 +1,6 @@
 import Styles from "./App.module.css";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Newscards from "./components/Newscards";
 import Axios from "./axios.js";
 import Home from './components/Home'
@@ -23,7 +23,7 @@ const App = () => {
   const [topheadlines, settopheadlines] = useState("");
   const [category, setcategory] = useState("");
   const [noneof, setnoneof] = useState({notunderstand:false,home:true});
-  const [source, setsource] = useState("");
+ 
   const [systemaudio] = useState([
     "can you speak that again ?",
     "Sorry I did not understand",
@@ -34,6 +34,7 @@ const App = () => {
   const [listening,setlistening]=useState(false)
 
   const [count,setcount]=useState(-1);
+  const [none,setnone]=useState(false)
   
  
   useEffect(()=>{
@@ -80,14 +81,15 @@ const App = () => {
           window.speechSynthesis.speak(msg);
           
          msg=new SpeechSynthesisUtterance("would you like me to read that ?");
-     msg.onstart=()=>{
+         window.speechSynthesis.speak(msg);
+         msg.onstart=()=>{
     
       recognition.start();
      
     
      }
         
-           window.speechSynthesis.speak(msg);
+           
             
            setlistening(true);
             
@@ -111,7 +113,28 @@ const App = () => {
     }
   }, [ noneof 
   ]);
+useEffect(()=>{
+ if(none)
+ {
+  for(let i=0;i<articles.length ;i++)
+  {
+   
+   if(none)
+   {
+    let ms=new SpeechSynthesisUtterance(articles[i].title);
+    ms.onstart=()=>
+    {console.log("started")
+    setcount(i);
+    
+  }
+    window.speechSynthesis.speak(ms);
+   
 
+   }
+    
+  }
+ }
+},[none])
   const shownews = (e) => {
     const current = e.resultIndex;
     settranscript(e.results[current][0].transcript);
@@ -122,12 +145,12 @@ const App = () => {
      if (temp.indexOf("top") !== -1) {
        console.log("from top")
       const country = ar[ar.length - 1]; //show me top news from india
-      country === "India" ? setcountry("in") : setcountry("");
-      country === "Tamil" ? setcountry("ta") : setcountry("");
+      if(country === "India") setcountry("in");
+      if(country === "Tamil")  setcountry("ta"); 
      
     
       setcategory("");
-      setsource("");
+     
       setnoneof({notunderstand:false,home:false});
       setnewstopic("");
       settopheadlines("top-headlines");
@@ -144,17 +167,16 @@ const App = () => {
      if(temp.search(ci))
      {
        setcategory(ci)
+       break;
      }
-     else{
-       setcategory('')
-     }
+     
    }
       
      //show me sports news from india
      if(temp.search('Hindi'))   setlang('hi') 
      if(temp.search('Tamil'))   setlang('ta')  //show me sports news from india in Hindi
       setcountry("in");
-      setsource("");
+      
      
       setnoneof({notunderstand:false,home:false});
       
@@ -181,7 +203,7 @@ console.log("from news")
        
         setcategory(cate);       //show me sports news
        
-        setsource("");
+      
         setcountry("");
         setnoneof({notunderstand:false,home:false});
      
@@ -193,19 +215,19 @@ console.log("from news")
      
            // give me bitcoin news
         setcategory("");
-        setsource("");
+       
         setcountry("");
         setnoneof({notunderstand:false,home:false});
         settopheadlines("");
         setnewstopic(cate); 
       }
     }
-    else if(temp.indexOf("go home")!==-1||transcript.indexOf("go back")!==-1)
+    else if(temp.indexOf("return home")!==-1||transcript.indexOf("go back")!==-1)
     {
       
      
       setcategory("");
-      setsource("");
+  
       settopheadlines("");
       setnewstopic("");
       setnoneof({notunderstand:false,home:true});
@@ -233,7 +255,7 @@ console.log("from news")
       setnoneof({notunderstand:true,home:false});
       setnewstopic("");
       setcategory("");
-      setsource("");
+
       settopheadlines("");
     }
   };
@@ -249,33 +271,16 @@ console.log("from news")
      
       if(e.results[current][0].transcript.indexOf("yes")!==-1)
       {
+        
         console.log("can")
         setnoneof({notunderstand:false,home:false});
         setnewstopic("");
         setcategory("");
-        setsource("");
+      
         settopheadlines("");
         settranscript(e.results[current][0].transcript);
-        for(let i=0;i<articles.length;i++)
-        {
-          let ms=new SpeechSynthesisUtterance(articles[i].title);
-          ms.onstart=()=>
-          {console.log("started")
-          setcount(i);
-        }
-          window.speechSynthesis.speak(ms);
-       
-          if(i===2)
-          {
-            ms=new SpeechSynthesisUtterance("should I continue")
-            window.speechSynthesis.speak(ms);
-            
-            setlistening(false)
-           
-             return;
-            
-          }
-        }}
+        setnone(true);
+       }
        else if (e.results[current][0].transcript !== transcript) {
           shownews(e);
           
@@ -288,7 +293,6 @@ console.log("from news")
       setlistening(false);
       reco=true;
     }
-    
   })
 
   const miconbutton = () => {
@@ -300,19 +304,23 @@ if(reco)
 {
   recognition.start();
 }
-setcount(-1)
+setcount(-1);
    
   
   };
-
+const stopbuttonclicked=async()=>{
+  setnone(false);
+ 
+}
   return (
     <div className={Styles.App}>
     
       <button disabled={listening} className={!listening?Styles.speak:Styles.speakclick} onClick={miconbutton}>Say</button>
   {noneof.home?null:<div className={Styles.textdiv}   > <h3>{transcript}</h3> </div>} 
-      {noneof.home || noneof.notunderstand? (
+      {noneof.home? (
        <Home/> 
       ) :  <Newscards className={Styles.newscards} count={count}   articles={articles} />}
+      <button className={Styles.stop} onClick={stopbuttonclicked} style={{display:none?'block':'none'}}>Stop</button>
     </div>
   );
 };
