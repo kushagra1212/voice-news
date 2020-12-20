@@ -48,8 +48,10 @@ const App = () => {
           window.speechSynthesis.speak(msg);
           msg.onstart=()=>{
           
+            setTimeout(()=>{
               recognition.start();
-            
+            },1000)
+           
            
            }
             
@@ -84,7 +86,9 @@ const App = () => {
          window.speechSynthesis.speak(msg);
          msg.onstart=()=>{
     
-      recognition.start();
+      setTimeout(()=>{
+        recognition.start();
+      },1000)
      
     
      }
